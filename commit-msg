@@ -1,15 +1,36 @@
 #!/bin/bash
 
+#Colour defs
+RED=$(tput setaf 1)
+YELLOW=$(tput setaf 3)
+NORMAL=$(tput sgr0)
+UNDERLINE=$(tput smul)
+BRIGHT=$(tput bold)
+GREEN=$(tput setaf 2)
+
 # Regex to validate the type pattern
-REGEX="^((Merge[ a-z-]* branch.*)|(Revert*)|((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.*\))?!?: .*))"
+REGEX="^((Merge[ a-z-]* branch.*)|(Revert*)|((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|release)(\(.*\))?!?: .*))"
 
 FILE=`cat $1` # File containing the commit message
 
-echo "Commit Message: ${FILE}"
+printf "\n${BRIGHT}Commit Message: ${FILE}\n\n${NORMAL}"
 
 if ! [[ $FILE =~ $REGEX ]]; then
-	echo >&2 "ERROR: Commit aborted for not following the Conventional Commit standard.​"
+	printf >&2 "${RED}ERROR: ${UNDERLINE}${BRIGHT}Commit aborted for not following the Conventional Commit standard.${NORMAL}\n"
+	printf >&2 '%s\n' '--------------------------------------------------------------------------------'
+	printf >&2 "${BRIGHT}### Keywords reminder ###${NORMAL}\n\n"
+	printf >&2 "${YELLOW}feat:${NORMAL} 	 	- A new feature​ -> MINOR\n"
+	printf >&2 "${YELLOW}fix:${NORMAL} 	        - A bug patch​ -> PATCH\n"
+	printf >&2 "${YELLOW}docs:${NORMAL}  	        - Documentation only change -> PATCH\n"
+	printf >&2 "${YELLOW}style:${NORMAL}  	- Change that do not affect meaning of the code -> PATCH\n​"
+	printf >&2 "${YELLOW}refactor:${NORMAL} 	- Change that neither fixes a bug or adds a feature ​-> PATCH\n"
+	printf >&2 "${YELLOW}pref:${NORMAL}  	        - Change that improves performance -> PATCH\n"
+	printf >&2 "${YELLOW}test:${NORMAL}  	        - Adding missing tests -> PATCH\n"
+	printf >&2 "${YELLOW}chore:${NORMAL}  	- ​Changes to the build process or auxiliary tools \n		  and libraries such documentation generation -> PATCH\n\n"
+	printf >&2 "footer with ${YELLOW}BREAKING CHANGE:${NORMAL} 	- introduces a breaking API change -> MAJOR\n"
+	printf >&2 '%s\n' '--------------------------------------------------------------------------------'
+	printf >&2 "https://www.conventionalcommits.org/en/v1.0.0/\nhttps://www.pixelmatters.com/blog/conventional-commits-dynamic-changelog\n\n"
 	exit 1
 else
-	echo >&2 "Valid commit message."
+	printf >&2 "${GREEN}Valid commit message.${NORMAL}\n\n"
 fi
